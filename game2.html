@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dice Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #9d0b36, #4f0f62);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .game {
+      display: flex;
+      justify-content: space-between;
+      width: 800px;
+      background: rgba(255, 255, 255, 0);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    .player {
+      flex: 1;
+      padding: 20px;
+      text-align: center;
+    }
+    .player.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+    }
+    .player h2 {
+      font-size: 28px;
+      color: #111;
+    }
+    .score {
+      font-size: 60px;
+      color: #d6006e;
+      margin: 20px 0;
+    }
+    .current-box {
+      background-color: #d6006e;
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .current-box h4 {
+      margin-bottom: 5px;
+    }
+    .center-controls {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .dice {
+      font-size: 80px;
+      margin: 20px 0;
+    }
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    button:hover {
+      background-color: #f0f0f0;
+    }
+    .new-game {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <button class="new-game" onclick="resetGame()">🔄 NEW GAME</button>
+    <div class="player" id="player0">
+      <h2>PLAYER 1</h2>
+      <div class="score" id="score0">0</div>
+      <div class="current-box">
+        <h4>CURRENT</h4>
+        <div id="current0">0</div>
+      </div>
+    </div>
+    <div class="center-controls">
+      <div class="dice" id="dice">🎲</div>
+      <button onclick="rollDice()">🎲 ROLL DICE</button>
+      <button onclick="holdScore()">📥 HOLD</button>
+    </div>
+    <div class="player" id="player1">
+      <h2>PLAYER 2</h2>
+      <div class="score" id="score1">0</div>
+      <div class="current-box">
+        <h4>CURRENT</h4>
+        <div id="current1">0</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let scores = [0, 0];
+    let currentScore = 0;
+    let activePlayer = 0;
+    let gamePlaying = true;
+    const score0 = document.getElementById("score0");
+    const score1 = document.getElementById("score1");
+    const current0 = document.getElementById("current0");
+    const current1 = document.getElementById("current1");
+    const dice = document.getElementById("dice");
+    const player0 = document.getElementById("player0");
+    const player1 = document.getElementById("player1");
+    function switchPlayer() {
+      currentScore = 0;
+      document.getElementById(`current${activePlayer}`).textContent = 0;
+      activePlayer = activePlayer === 0 ? 1 : 0;
+      player0.classList.toggle("active");
+      player1.classList.toggle("active");
+    }
+
+    function rollDice() {
+      if (!gamePlaying) return;
+
+      const roll = Math.floor(Math.random() * 6) + 1;
+      const diceFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+      dice.textContent = diceFaces[roll - 1];
+
+      if (roll !== 1) {
+        currentScore += roll;
+        document.getElementById(`current${activePlayer}`).textContent = currentScore;
+      } else {
+        switchPlayer();
+      }
+    }
+
+    function holdScore() {
+      if (!gamePlaying) return;
+
+      scores[activePlayer] += currentScore;
+      document.getElementById(`score${activePlayer}`).textContent = scores[activePlayer];
+
+      if (scores[activePlayer] >= 30) {
+        gamePlaying = false;
+        dice.textContent = `🎉`;
+        alert(`Player ${activePlayer + 1} wins!`);
+      } else {
+        switchPlayer();
+      }
+    }
+
+    function resetGame() {
+      scores = [0, 0];
+      currentScore = 0;
+      activePlayer = 0;
+      gamePlaying = true;
+
+      score0.textContent = 0;
+      score1.textContent = 0;
+      current0.textContent = 0;
+      current1.textContent = 0;
+      dice.textContent = "🎲";
+
+      player0.classList.add("active");
+      player1.classList.remove("active");
+    }
+    resetGame();
+  </script>
+</body>
+</html>
